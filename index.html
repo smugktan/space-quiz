@@ -888,9 +888,44 @@
       }
     ];
 
+    let activeQuestions = [];
     let currentIndex = 0;
     let score = 0;
     let answered = false;
+
+    // Fisher-Yates shuffle helper
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    // Prepares a fresh randomized question deck and shuffled options
+    function prepareDeck() {
+      // 1. Shuffle the 10 questions
+      const shuffledQList = shuffleArray(questions);
+
+      // 2. Shuffle choices within each question while maintaining the correct answer reference
+      activeQuestions = shuffledQList.map((q) => {
+        const optionPairs = q.options.map((optText, origIdx) => ({
+          text: optText,
+          isCorrect: origIdx === q.answer
+        }));
+        const shuffledPairs = shuffleArray(optionPairs);
+        const newCorrectAnswer = shuffledPairs.findIndex((p) => p.isCorrect);
+
+        return {
+          category: q.category,
+          question: q.question,
+          options: shuffledPairs.map((p) => p.text),
+          answer: newCorrectAnswer,
+          explanation: q.explanation
+        };
+      });
+    }
 
     const quizView = document.getElementById("quiz-view");
     const resultsView = document.getElementById("results-view");
@@ -1055,7 +1090,7 @@
     function loadQuestion(index) {
       answered = false;
       feedbackBanner.className = "feedback-banner";
-      const q = questions[index];
+      const q = activeQuestions[index];
 
       // Update counters and headers
       qBadge.textContent = index + 1;
@@ -1064,7 +1099,7 @@
       qText.textContent = q.question;
 
       // Update progress bar
-      const progressPercent = ((index) / questions.length) * 100;
+      const progressPercent = ((index) / activeQuestions.length) * 100;
       progressBar.style.width = progressPercent + "%";
 
       // Render options with mission-control telemetry readouts
@@ -1094,7 +1129,7 @@
       if (answered) return;
       answered = true;
 
-      const q = questions[currentIndex];
+      const q = activeQuestions[currentIndex];
       const buttons = optionsContainer.querySelectorAll(".option-btn");
       const isCorrect = selectedIndex === q.answer;
 
@@ -1104,7 +1139,7 @@
       }
 
       // Progress bar fill for current step completion
-      const currentProgress = ((currentIndex + 1) / questions.length) * 100;
+      const currentProgress = ((currentIndex + 1) / activeQuestions.length) * 100;
       progressBar.style.width = currentProgress + "%";
 
       // Apply mission control HUD styling to options
@@ -1165,7 +1200,7 @@
 
     function nextQuestion() {
       playTone("click");
-      if (currentIndex < questions.length - 1) {
+      if (currentIndex < activeQuestions.length - 1) {
         currentIndex++;
         loadQuestion(currentIndex);
       } else {
@@ -1186,7 +1221,7 @@
       const resStatus = document.getElementById("res-status");
 
       resScore.textContent = score;
-      const accuracy = Math.round((score / questions.length) * 100);
+      const accuracy = Math.round((score / activeQuestions.length) * 100);
       resAccuracy.textContent = accuracy + "%";
 
       if (score === 10) {
@@ -1226,6 +1261,7 @@
       score = 0;
       resultsView.style.display = "none";
       quizView.style.display = "block";
+      prepareDeck();
       loadQuestion(0);
     }
 
@@ -1252,8 +1288,9 @@
       }
     });
 
-    // Initialize UI and first question
+    // Initialize UI, randomized question deck, and first question
     updateAudioButtonUI();
+    prepareDeck();
     loadQuestion(0);
   </script>
 </body>

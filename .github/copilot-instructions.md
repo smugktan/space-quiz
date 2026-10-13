@@ -18,7 +18,8 @@ This project is a zero-dependency, single-file web application (`index.html`). T
 The entire application runs entirely client-side inside `index.html`, structured into three interconnected layers:
 
 1. **State & Data Store (`<script>`):**
-   - `questions`: Array of objects defining `category`, `question`, `options` (4 choices), zero-indexed `answer`, and educational `explanation`.
+   - `questions`: Master array of question definitions (`category`, `question`, 4 `options`, zero-indexed `answer`, and `explanation`).
+   - `activeQuestions`: Randomized runtime question deck generated via `prepareDeck()`, where both question order and option sequences are shuffled via Fisher-Yates while preserving correct answer mappings.
    - Runtime state: `currentIndex` (active question 0–9), `score` (cumulative correct count), and `answered` (boolean lockout guard).
    - View Controller: Toggles display state between `#quiz-view` and `#results-view`.
 
