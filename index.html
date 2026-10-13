@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Space Exploration Quiz</title>
+  <style>
+    :root {
+      --bg: #f4f6fb;
+      --card-bg: #ffffff;
+      --card-border: #cbd5e1;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --accent-light: #eff6ff;
+      --btn-bg: #f8fafc;
+      --btn-border: #cbd5e1;
+      --btn-hover: #f1f5f9;
+      --success-bg: #ecfdf5;
+      --success-border: #059669;
+      --success-text: #065f46;
+      --error-bg: #fef2f2;
+      --error-border: #dc2626;
+      --error-text: #991b1b;
+      --progress-bg: #e2e8f0;
+      --progress-fill: linear-gradient(90deg, #3b82f6, #06b6d4);
+      --shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+      --badge-bg: #eff6ff;
+      --badge-text: #1d4ed8;
+      --hud-hud: #0284c7;
+      --hud-glow: rgba(59, 130, 246, 0.2);
+      --focus-ring: rgba(59, 130, 246, 0.25);
+      --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #070b14;
+        --card-bg: #0d1527;
+        --card-border: #1e2e4a;
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --accent: #38bdf8;
+        --accent-hover: #60a5fa;
+        --accent-light: #0f2744;
+        --btn-bg: #111c33;
+        --btn-border: #223759;
+        --btn-hover: #172747;
+        --success-bg: rgba(5, 150, 105, 0.2);
+        --success-border: #10b981;
+        --success-text: #6ee7b7;
+        --error-bg: rgba(220, 38, 38, 0.2);
+        --error-border: #f87171;
+        --error-text: #fecaca;
+        --progress-bg: #152238;
+        --progress-fill: linear-gradient(90deg, #0284c7, #38bdf8);
+        --shadow: 0 20px 35px -8px rgba(0, 0, 0, 0.7);
+        --badge-bg: #0f2744;
+        --badge-text: #7dd3fc;
+        --hud-hud: #38bdf8;
+        --hud-glow: rgba(56, 189, 248, 0.25);
+        --focus-ring: rgba(56, 189, 248, 0.35);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+      background-color: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem 1rem;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    /* Narrow column container */
+    .quiz-container {
+      width: 100%;
+      max-width: 480px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.5rem 1.5rem 1.75rem;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Mission Control Corner Accents */
+    .quiz-container::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 14px;
+      height: 14px;
+      border-top: 2px solid var(--accent);
+      border-left: 2px solid var(--accent);
+      border-top-left-radius: 15px;
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .quiz-container::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 14px;
+      height: 14px;
+      border-bottom: 2px solid var(--accent);
+      border-right: 2px solid var(--accent);
+      border-bottom-right-radius: 15px;
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    /* Mission Telemetry Top Header */
+    .mission-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 0.75rem;
+      margin-bottom: 0.85rem;
+      border-bottom: 1px dashed var(--card-border);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .mission-top-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .mission-pip {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 6px #10b981;
+      display: inline-block;
+      animation: pipBlink 2s infinite ease-in-out;
+    }
+
+    .mission-top-code {
+      font-weight: 600;
+      opacity: 0.85;
+    }
+
+    /* Top Header Bar */
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      background: var(--badge-bg);
+      color: var(--badge-text);
+      letter-spacing: 0.02em;
+    }
+
+    .score-badge {
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Progress Bar */
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      background: var(--progress-bg);
+      border-radius: 9999px;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--progress-fill);
+      border-radius: 9999px;
+      transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Question Box */
+    .question-category {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 0.35rem;
+    }
+
+    .question-text {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 1.25rem;
+      line-height: 1.4;
+      min-height: 3.2rem;
+    }
+
+    /* Options Grid */
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .option-btn {
+      position: relative;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.85rem 1rem;
+      background: var(--btn-bg);
+      border: 1.5px solid var(--btn-border);
+      border-radius: 10px;
+      color: var(--text-main);
+      font-size: 0.95rem;
+      font-family: inherit;
+      font-weight: 500;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      outline: none;
+      user-select: none;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      background: var(--btn-hover);
+      border-color: var(--accent);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px var(--hud-glow);
+    }
+
+    .option-btn:hover:not(:disabled) .option-telemetry {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .option-btn:hover:not(:disabled) .telemetry-pip {
+      background: var(--accent);
+      box-shadow: 0 0 6px var(--accent);
+    }
+
+    .option-btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .option-btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+      box-shadow: 0 0 0 4px var(--focus-ring);
+    }
+
+    .option-btn:disabled {
+      cursor: default;
+    }
+
+    .option-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .option-prefix {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.2rem 0.45rem;
+      border-radius: 6px;
+      background: var(--card-border);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+
+    .option-text {
+      flex: 1;
+      line-height: 1.35;
+      word-break: break-word;
+    }
+
+    .option-telemetry {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      padding: 0.2rem 0.45rem;
+      border-radius: 4px;
+      background: var(--card-border);
+      color: var(--text-muted);
+      border: 1px solid transparent;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+
+    .telemetry-pip {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      display: inline-block;
+      transition: all 0.2s ease;
+    }
+
+    /* Mission Control Selected & Answered States */
+    .option-btn.selected {
+      position: relative;
+    }
+
+    /* HUD Reticle brackets on the selected mission element */
+    .option-btn.selected::before {
+      content: "";
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      width: 9px;
+      height: 9px;
+      border-top: 2.5px solid currentColor;
+      border-left: 2.5px solid currentColor;
+      pointer-events: none;
+    }
+
+    .option-btn.selected::after {
+      content: "";
+      position: absolute;
+      bottom: -2px;
+      right: -2px;
+      width: 9px;
+      height: 9px;
+      border-bottom: 2.5px solid currentColor;
+      border-right: 2.5px solid currentColor;
+      pointer-events: none;
+    }
+
+    .option-btn.correct {
+      background: var(--success-bg) !important;
+      border-color: var(--success-border) !important;
+      color: var(--success-text) !important;
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.25), inset 0 0 10px rgba(16, 185, 129, 0.08);
+      animation: pulseGreen 0.45s ease-out;
+    }
+
+    .option-btn.correct .option-prefix {
+      background: var(--success-border);
+      color: #ffffff;
+    }
+
+    .option-btn.correct .option-telemetry {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: var(--success-border);
+      color: var(--success-text);
+    }
+
+    .option-btn.correct .telemetry-pip {
+      background: var(--success-border);
+      box-shadow: 0 0 8px var(--success-border);
+      animation: pipBlink 1.4s infinite;
+    }
+
+    .option-btn.wrong {
+      background: var(--error-bg) !important;
+      border-color: var(--error-border) !important;
+      color: var(--error-text) !important;
+      box-shadow: 0 0 16px rgba(220, 38, 38, 0.25), inset 0 0 10px rgba(220, 38, 38, 0.08);
+      animation: shakeRed 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    }
+
+    .option-btn.wrong .option-prefix {
+      background: var(--error-border);
+      color: #ffffff;
+    }
+
+    .option-btn.wrong .option-telemetry {
+      background: rgba(220, 38, 38, 0.2);
+      border-color: var(--error-border);
+      color: var(--error-text);
+    }
+
+    .option-btn.wrong .telemetry-pip {
+      background: var(--error-border);
+      box-shadow: 0 0 8px var(--error-border);
+      animation: pipBlink 0.6s infinite;
+    }
+
+    .option-btn.revealed {
+      border-style: dashed;
+      background: var(--success-bg) !important;
+      border-color: var(--success-border) !important;
+      color: var(--success-text) !important;
+    }
+
+    .option-btn.revealed .option-prefix {
+      background: var(--success-border);
+      color: #ffffff;
+    }
+
+    .option-btn.revealed .option-telemetry {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: var(--success-border);
+      color: var(--success-text);
+    }
+
+    .option-btn.revealed .telemetry-pip {
+      background: var(--success-border);
+      box-shadow: 0 0 8px var(--success-border);
+    }
+
+    .option-btn.dimmed {
+      opacity: 0.35;
+      filter: grayscale(0.3);
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
+
+    @keyframes pipBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .option-btn.correct,
+      .option-btn.wrong,
+      .results-emoji,
+      .telemetry-pip,
+      .mission-pip {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+
+    /* Keyframe Animations */
+    @keyframes pulseGreen {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      }
+      50% {
+        transform: scale(1.02);
+        box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    @keyframes shakeRed {
+      10%, 90% {
+        transform: translate3d(-2px, 0, 0);
+      }
+      20%, 80% {
+        transform: translate3d(4px, 0, 0);
+      }
+      30%, 50%, 70% {
+        transform: translate3d(-6px, 0, 0);
+      }
+      40%, 60% {
+        transform: translate3d(6px, 0, 0);
+      }
+    }
+
+    /* Feedback Banner */
+    .feedback-banner {
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.65rem 0.9rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      visibility: hidden;
+    }
+
+    .feedback-banner.visible {
+      opacity: 1;
+      transform: translateY(0);
+      visibility: visible;
+    }
+
+    .feedback-banner.correct {
+      background: var(--success-bg);
+      color: var(--success-text);
+      border: 1px solid var(--success-border);
+    }
+
+    .feedback-banner.wrong {
+      background: var(--error-bg);
+      color: var(--error-text);
+      border: 1px solid var(--error-border);
+    }
+
+    .next-btn {
+      background: var(--accent);
+      color: #ffffff;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: background 0.15s, transform 0.15s;
+      flex-shrink: 0;
+    }
+
+    .next-btn:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    /* Results Screen */
+    .results-screen {
+      display: none;
+      text-align: center;
+      padding: 1rem 0.5rem;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .results-emoji {
+      font-size: 4rem;
+      margin-bottom: 0.5rem;
+      line-height: 1;
+      animation: bounce 0.8s ease;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+      }
+      40% {
+        transform: translateY(-12px);
+      }
+      60% {
+        transform: translateY(-6px);
+      }
+    }
+
+    .results-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 0.35rem;
+    }
+
+    .results-subtitle {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .score-circle {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      background: var(--accent-light);
+      border: 3px solid var(--accent);
+      margin-bottom: 1.5rem;
+    }
+
+    .score-number {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .score-total {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .results-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .stat-card {
+      background: var(--btn-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 0.75rem;
+    }
+
+    .stat-val {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .stat-lbl {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .restart-btn {
+      width: 100%;
+      background: var(--accent);
+      color: #ffffff;
+      border: none;
+      padding: 0.85rem 1.25rem;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: background 0.15s, transform 0.15s;
+    }
+
+    .restart-btn:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body>
+
+  <main class="quiz-container">
+    <!-- Mission Control Top Telemetry Bar -->
+    <div class="mission-top-bar" aria-hidden="true">
+      <span class="mission-top-tag"><span class="mission-pip"></span>SYS // FLIGHT OPS</span>
+      <span class="mission-top-code">APOLLO-DSN // T+ACTIVE</span>
+    </div>
+
+    <!-- Active Quiz View -->
+    <div id="quiz-view">
+      <div class="header-bar">
+        <span class="badge" id="question-badge">
+          🚀 <span id="current-q-num">1</span> of 10
+        </span>
+        <span class="badge score-badge">
+          ⭐ Score: <span id="score-val">0</span>
+        </span>
+      </div>
+
+      <div class="progress-track" aria-label="Quiz progress">
+        <div class="progress-fill" id="progress-bar"></div>
+      </div>
+
+      <div class="question-category" id="q-category">Space Mission</div>
+      <h2 class="question-text" id="q-text">Loading question...</h2>
+
+      <div class="options-list" id="options-container" role="radiogroup">
+        <!-- 4 option buttons dynamically inserted -->
+      </div>
+
+      <div class="feedback-banner" id="feedback-banner">
+        <span id="feedback-msg">Correct!</span>
+        <button class="next-btn" id="next-btn" onclick="nextQuestion()">Next ➔</button>
+      </div>
+    </div>
+
+    <!-- Results Screen -->
+    <div class="results-screen" id="results-view">
+      <div class="results-emoji" id="res-emoji">🚀</div>
+      <h2 class="results-title" id="res-title">Mission Complete!</h2>
+      <p class="results-subtitle" id="res-subtitle">Here is how you scored on your cosmic voyage.</p>
+
+      <div class="score-circle">
+        <div class="score-number" id="res-score">0</div>
+        <div class="score-total">out of 10</div>
+      </div>
+
+      <div class="results-stats">
+        <div class="stat-card">
+          <div class="stat-val" id="res-accuracy">0%</div>
+          <div class="stat-lbl">Accuracy</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="res-status">Cadet</div>
+          <div class="stat-lbl">Rank</div>
+        </div>
+      </div>
+
+      <button class="restart-btn" onclick="restartQuiz()">
+        <span>🔄 Launch Again</span>
+      </button>
+    </div>
+  </main>
+
+  <script>
+    const questions = [
+      {
+        category: "Satellite Pioneer",
+        question: "What was the first artificial satellite launched into Earth's orbit in 1957?",
+        options: ["Sputnik 1", "Explorer 1", "Vostok 1", "Telstar 1"],
+        answer: 0,
+        explanation: "Sputnik 1 was launched by the Soviet Union on October 4, 1957, ushering in the Space Age."
+      },
+      {
+        category: "Lunar Exploration",
+        question: "Who was the first human to set foot on the surface of the Moon in July 1969?",
+        options: ["Buzz Aldrin", "Neil Armstrong", "Yuri Gagarin", "Michael Collins"],
+        answer: 1,
+        explanation: "Neil Armstrong stepped onto the lunar surface during NASA's Apollo 11 mission on July 20, 1969."
+      },
+      {
+        category: "Mars Exploration",
+        question: "Which NASA rover landed on Mars in 2021 carrying the Ingenuity helicopter?",
+        options: ["Curiosity", "Opportunity", "Perseverance", "Spirit"],
+        answer: 2,
+        explanation: "Perseverance landed in Jezero Crater in February 2021 and released Ingenuity, the first aircraft to fly on another planet."
+      },
+      {
+        category: "Astronomy Observatories",
+        question: "Which infrared space observatory was launched on Christmas Day 2021 as Hubble's successor?",
+        options: ["James Webb Space Telescope", "Kepler Telescope", "Spitzer Telescope", "Nancy Grace Roman"],
+        answer: 0,
+        explanation: "The James Webb Space Telescope (JWST) launched December 25, 2021, to view the universe in deep infrared."
+      },
+      {
+        category: "Solar System",
+        question: "Which planet holds the record for the highest number of confirmed moons in our Solar System?",
+        options: ["Jupiter", "Neptune", "Saturn", "Uranus"],
+        answer: 2,
+        explanation: "Saturn leads our Solar System with 146 officially recognized and confirmed moons."
+      },
+      {
+        category: "Human Spaceflight",
+        question: "In 1961, Yuri Gagarin became the first human in space aboard which spacecraft?",
+        options: ["Vostok 1", "Mercury-Redstone 3", "Gemini 4", "Soyuz 1"],
+        answer: 0,
+        explanation: "Cosmonaut Yuri Gagarin completed an orbit around Earth aboard Vostok 1 on April 12, 1961."
+      },
+      {
+        category: "Deep Space",
+        question: "Which spacecraft became the first human-made object to cross into interstellar space in 2012?",
+        options: ["Pioneer 10", "Voyager 1", "New Horizons", "Voyager 2"],
+        answer: 1,
+        explanation: "Voyager 1 crossed the heliopause into interstellar space in August 2012, billions of miles from Earth."
+      },
+      {
+        category: "Planetary Geology",
+        question: "What is the name of the largest volcano and mountain in the Solar System, located on Mars?",
+        options: ["Mauna Kea", "Olympus Mons", "Elysium Mons", "Tharsis Tholus"],
+        answer: 1,
+        explanation: "Olympus Mons is a massive shield volcano on Mars, rising roughly 2.5 times higher than Mount Everest."
+      },
+      {
+        category: "Dwarf Planets",
+        question: "Which NASA probe completed a historic flyby of Pluto and its moons in July 2015?",
+        options: ["New Horizons", "Dawn", "Cassini", "Rosetta"],
+        answer: 0,
+        explanation: "New Horizons returned the first close-up, high-resolution images of Pluto's heart-shaped glacier in 2015."
+      },
+      {
+        category: "Future Horizons",
+        question: "What is NASA's current program to return astronauts to the Moon and prepare for Mars?",
+        options: ["Apollo Next", "Constellation", "Orion Initiative", "Artemis"],
+        answer: 3,
+        explanation: "NASA's Artemis program aims to land the first woman and person of color on the Moon and establish long-term lunar exploration."
+      }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+    let answered = false;
+
+    const quizView = document.getElementById("quiz-view");
+    const resultsView = document.getElementById("results-view");
+    const qBadge = document.getElementById("current-q-num");
+    const scoreVal = document.getElementById("score-val");
+    const progressBar = document.getElementById("progress-bar");
+    const qCategory = document.getElementById("q-category");
+    const qText = document.getElementById("q-text");
+    const optionsContainer = document.getElementById("options-container");
+    const feedbackBanner = document.getElementById("feedback-banner");
+    const feedbackMsg = document.getElementById("feedback-msg");
+
+    const prefixes = ["A", "B", "C", "D"];
+
+    function loadQuestion(index) {
+      answered = false;
+      feedbackBanner.className = "feedback-banner";
+      const q = questions[index];
+
+      // Update counters and headers
+      qBadge.textContent = index + 1;
+      scoreVal.textContent = score;
+      qCategory.textContent = q.category;
+      qText.textContent = q.question;
+
+      // Update progress bar
+      const progressPercent = ((index) / questions.length) * 100;
+      progressBar.style.width = progressPercent + "%";
+
+      // Render options with mission-control telemetry readouts
+      optionsContainer.innerHTML = "";
+      q.options.forEach((optText, i) => {
+        const btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.setAttribute("role", "radio");
+        btn.setAttribute("aria-checked", "false");
+        btn.innerHTML = `
+          <div class="option-left">
+            <span class="option-prefix">[CH-${prefixes[i]}]</span>
+            <span class="option-text">${optText}</span>
+          </div>
+          <span class="option-telemetry" aria-hidden="true">
+            <span class="telemetry-pip"></span>
+            <span class="telemetry-label">READY</span>
+          </span>
+          <span class="sr-status sr-only"></span>
+        `;
+        btn.onclick = () => selectOption(i);
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    function selectOption(selectedIndex) {
+      if (answered) return;
+      answered = true;
+
+      const q = questions[currentIndex];
+      const buttons = optionsContainer.querySelectorAll(".option-btn");
+      const isCorrect = selectedIndex === q.answer;
+
+      if (isCorrect) {
+        score++;
+        scoreVal.textContent = score;
+      }
+
+      // Progress bar fill for current step completion
+      const currentProgress = ((currentIndex + 1) / questions.length) * 100;
+      progressBar.style.width = currentProgress + "%";
+
+      // Apply mission control HUD styling to options
+      buttons.forEach((btn, idx) => {
+        btn.disabled = true;
+        const telemetryLabel = btn.querySelector(".telemetry-label");
+        const srStatus = btn.querySelector(".sr-status");
+
+        if (idx === selectedIndex) {
+          btn.classList.add("selected");
+          btn.setAttribute("aria-checked", "true");
+        } else {
+          btn.setAttribute("aria-checked", "false");
+        }
+
+        if (idx === q.answer) {
+          btn.classList.add("correct");
+          if (idx !== selectedIndex) {
+            btn.classList.add("revealed");
+          }
+          if (telemetryLabel) {
+            telemetryLabel.textContent = idx === selectedIndex ? "NOMINAL // PASS" : "TARGET // CORRECT";
+          }
+          if (srStatus) {
+            srStatus.textContent = idx === selectedIndex ? "(Selected: Correct answer)" : "(Correct answer)";
+          }
+        } else if (idx === selectedIndex && !isCorrect) {
+          btn.classList.add("wrong");
+          if (telemetryLabel) {
+            telemetryLabel.textContent = "ANOMALY // REJECT";
+          }
+          if (srStatus) {
+            srStatus.textContent = "(Selected: Incorrect answer)";
+          }
+        } else {
+          btn.classList.add("dimmed");
+          if (telemetryLabel) {
+            telemetryLabel.textContent = "STANDBY";
+          }
+        }
+      });
+
+      // Show animated feedback banner
+      if (isCorrect) {
+        feedbackBanner.className = "feedback-banner correct visible";
+        feedbackMsg.textContent = "✨ Correct! " + q.explanation;
+      } else {
+        feedbackBanner.className = "feedback-banner wrong visible";
+        feedbackMsg.textContent = "❌ Incorrect! " + q.explanation;
+      }
+
+      // Focus the next button so keyboard/screen reader users can seamlessly continue with Enter or Space
+      const nextBtn = document.getElementById("next-btn");
+      if (nextBtn) nextBtn.focus();
+    }
+
+    function nextQuestion() {
+      if (currentIndex < questions.length - 1) {
+        currentIndex++;
+        loadQuestion(currentIndex);
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+      quizView.style.display = "none";
+      resultsView.style.display = "block";
+
+      const resEmoji = document.getElementById("res-emoji");
+      const resTitle = document.getElementById("res-title");
+      const resSubtitle = document.getElementById("res-subtitle");
+      const resScore = document.getElementById("res-score");
+      const resAccuracy = document.getElementById("res-accuracy");
+      const resStatus = document.getElementById("res-status");
+
+      resScore.textContent = score;
+      const accuracy = Math.round((score / questions.length) * 100);
+      resAccuracy.textContent = accuracy + "%";
+
+      if (score === 10) {
+        resEmoji.textContent = "🚀";
+        resTitle.textContent = "Galactic Commander!";
+        resSubtitle.textContent = "Flawless mission! You have mastered cosmic exploration.";
+        resStatus.textContent = "Commander";
+      } else if (score >= 8) {
+        resEmoji.textContent = "👨‍🚀";
+        resTitle.textContent = "Astronaut Elite!";
+        resSubtitle.textContent = "Spectacular navigation across the cosmos!";
+        resStatus.textContent = "Astronaut";
+      } else if (score >= 6) {
+        resEmoji.textContent = "🛰️";
+        resTitle.textContent = "Orbital Specialist!";
+        resSubtitle.textContent = "Great flight path! A little more study and you'll reach the stars.";
+        resStatus.textContent = "Specialist";
+      } else if (score >= 4) {
+        resEmoji.textContent = "🔭";
+        resTitle.textContent = "Stargazer!";
+        resSubtitle.textContent = "Good foundation! Ready for another training simulation?";
+        resStatus.textContent = "Cadet";
+      } else {
+        resEmoji.textContent = "🌍";
+        resTitle.textContent = "Ground Control!";
+        resSubtitle.textContent = "Every great journey starts with a countdown. Try again!";
+        resStatus.textContent = "Trainee";
+      }
+
+      const restartBtn = document.querySelector(".restart-btn");
+      if (restartBtn) restartBtn.focus();
+    }
+
+    function restartQuiz() {
+      currentIndex = 0;
+      score = 0;
+      resultsView.style.display = "none";
+      quizView.style.display = "block";
+      loadQuestion(0);
+    }
+
+    // Keyboard navigation (Arrow keys to navigate radio options, 1-4 shortcut keys)
+    optionsContainer.addEventListener("keydown", (e) => {
+      const buttons = Array.from(optionsContainer.querySelectorAll(".option-btn:not(:disabled)"));
+      if (!buttons.length) return;
+      const currentFocused = document.activeElement;
+      const currentIndexInGroup = buttons.indexOf(currentFocused);
+
+      if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+        e.preventDefault();
+        const next = (currentIndexInGroup + 1) % buttons.length;
+        buttons[next].focus();
+      } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+        e.preventDefault();
+        const prev = (currentIndexInGroup - 1 + buttons.length) % buttons.length;
+        buttons[prev].focus();
+      } else if (["1", "2", "3", "4"].includes(e.key)) {
+        const idx = parseInt(e.key, 10) - 1;
+        if (buttons[idx]) {
+          buttons[idx].click();
+        }
+      }
+    });
+
+    // Initialize first question
+    loadQuestion(0);
+  </script>
+</body>
+</html>
