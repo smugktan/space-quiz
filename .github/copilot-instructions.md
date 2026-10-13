@@ -36,6 +36,7 @@ The entire application runs entirely client-side inside `index.html`, structured
 ## Key Conventions
 
 - **Strict Zero-Dependency Constraint:** Keep all styles, markup, and scripts self-contained within `index.html`. Do not introduce external CDN scripts, web fonts, or bundlers unless requested.
+- **Synthesized Audio (Web Audio API):** All audio effects must be synthesized dynamically using native `AudioContext` oscillators (`OscillatorNode` + `GainNode`). No audio files (MP3/WAV) or external audio libraries are permitted. Always respect browser autoplay policies, default to muted, and persist preference in `localStorage`.
 - **Accessibility & Focus Management:**
   - Option items must maintain ARIA compliance (`role="radiogroup"`, `role="radio"`, and `aria-checked`).
   - Screen reader text must be maintained via `.sr-only` indicators.
